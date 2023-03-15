@@ -1,10 +1,15 @@
+let allData;
 const loadPhones = async (searchText, dataLimit) => {
   toggleSpinner(true);
 
-  const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  displayPhones(data.data, dataLimit);
+  if (searchText) {
+    const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    allData = data.data;
+  }
+
+  displayPhones(allData, dataLimit);
 };
 
 const displayPhones = (phones, dataLimit) => {
@@ -52,6 +57,8 @@ const processSearch = (dataLimit) => {
   const searchField = document.getElementById("search-field");
   const searchText = searchField.value;
   loadPhones(searchText, dataLimit);
+
+  searchField.value = "";
 };
 
 // handle search button click
@@ -61,7 +68,6 @@ document.getElementById("btn-search").addEventListener("click", function () {
 });
 // handle search button enter
 document.getElementById("search-field").addEventListener("keyup", function (e) {
-  console.log(e);
   if (e.code === "Enter") {
     processSearch(10);
   }
@@ -104,7 +110,7 @@ const displayPhoneDetails = (phone) => {
   const modalTitle = document.getElementById("phoneDetailModalLabel");
   modalTitle.innerText = phone.name;
   const phoneDetails = document.getElementById("phone-details");
-  
+
   phoneDetails.innerHTML = `
         <p>Release Date: ${phone.releaseDate}</p>
         <p>Storage: ${phone.mainFeatures?.memory}</p>
